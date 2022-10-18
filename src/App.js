@@ -4,26 +4,29 @@ import { useState, useEffect } from "react";
 function App() {
 
   const [fetchData, setFetchData] = useState([])
+  const [isFirstTime, setIsFirstTime] = useState(true)
 
-  var myHeaders = new Headers();
-  myHeaders.append("Service-ID", "Q");
-  myHeaders.append("Accept", "application/json");
-  myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
-  myHeaders.append('Access-Control-Allow-Credentials', 'true');
-  myHeaders.append('Host', 'https://token-dev-api.abc-softwaredev.com/');
-  
-  var requestOptions = {
+  if (isFirstTime) {
+    setIsFirstTime(false);
+    var myHeaders = new Headers();
+    myHeaders.append('Service-ID', 'T');
+
+    var requestOptions = {
     method: 'GET',
-    headers: myHeaders,
-    redirect: 'follow'
+    headers: new Headers({
+      'service-ID': 'T', 
+      'Content-Type': 'application/json',
+    })
   };
   
-  fetch("https://token-dev-api.abc-softwaredev.com//token?blocked=false&page=0&personalized=false&size=10", requestOptions)
+  
+  fetch("https://token-dev-api.abc-softwaredev.com/token?blocked=false&page=0&personalized=false&size=10", requestOptions)
     .then(response => response.text())
     .then(result => {setFetchData(result)})
-    .catch(error => console.log('error', error));
+    .catch(error => console.log('error', error.de));
     console.log(fetchData)
   return <div className="App"></div>;
+  }
 }
 
 export default App;

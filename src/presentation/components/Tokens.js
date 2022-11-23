@@ -1,51 +1,30 @@
 import React from "react";
 import tokens from "./tokens.css";
 import { useEffect, useState } from "react";
+import { getData } from "../../services/APIservice.js";
 
 function Tokens() {
   const [fetchData, setFetchData] = useState([]);
   const [isFirstTime, setIsFirstTime] = useState(true);
-  const [tokenModel, setTokenModel] = useState({serialNumber: '', personalized: '', blocked: '', UserModel: ''} )
-
+  const [tokenModel, setTokenModel] = useState([]);
 
   useEffect(() => {
     if (isFirstTime) {
       setIsFirstTime(false);
-      let myHeaders = new Headers();
-      myHeaders.append("Service-ID", "T");
 
-      let requestOptions = {
-        method: "GET",
-        headers: new Headers({
-          "service-ID": "T",
-          "Content-Type": "application/json",
-        }),
-      };
+      getData()
+        .then((res) => res.json())
+        .then((data) => setFetchData(data.records));
+    }
+  }, []);
 
-      fetch(
-        "https://token-dev-api.abc-softwaredev.com/token?blocked=false&page=0&personalized=false&size=10",
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((result) => {
-          setFetchData( result.records );
-          setTokenModel({serialNumber: result.records.serialNumber})
-        })
-        .catch((error) => console.log("error", error.de));
-      }
+  
+  useEffect(() => {
+    Object.keys(fetchData).forEach(key => {
+      setTokenModel({serialNumber: fetchData[key].serialNumber, personalized:fetchData[key].personalized, blocked: fetchData[key].blocked, UserModel: ''}) });
       
-      Object.keys(fetchData).forEach(key => {
-        setTokenModel({serialNumber: fetchData[key].serialNumber, personalized:fetchData[key].personalized, blocked: fetchData[key].blocked, UserModel: ''})
-        
-      });
-
-    
-      
-    }, [fetchData]);
-
-    console.log( tokenModel.serialNumber);
-    
-   
+    },[fetchData])
+    console.log(tokenModel);
 
   return (
     <div className="main_page_tokens">
@@ -57,7 +36,7 @@ function Tokens() {
             
           </ul>
         
-        ))}
+        ))} 
     </div>
   );
 }
